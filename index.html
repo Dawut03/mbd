@@ -1,62 +1,66 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>MBD Clicker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: black;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Orbitron', sans-serif;
+      background: url('https://i.ibb.co/y4pQGVy/space-bg.jpg') no-repeat center center fixed;
+      background-size: cover;
       color: white;
       overflow: hidden;
     }
-
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 0;
-    }
-
-    .ui {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 100px;
-    }
-
-    #logo {
+    .top-bar {
       position: absolute;
-      top: 20px;
+      top: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 10;
+    }
+    .center-logo {
+      position: absolute;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      background: radial-gradient(circle at 30% 30%, gold, orange);
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
+      font-size: 2em;
+      color: white;
+    }
+    .tab-bar {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.6em;
-      font-weight: bold;
-      color: black;
-      box-shadow: 0 0 15px gold;
-      animation: pulse 2s infinite;
+      justify-content: space-around;
+      background: rgba(0,0,0,0.6);
+      padding: 10px 0;
+      border-top: 1px solid white;
     }
-
-    @keyframes pulse {
-      0% { transform: translateX(-50%) scale(1); }
-      50% { transform: translateX(-50%) scale(1.05); }
-      100% { transform: translateX(-50%) scale(1); }
+    .tab {
+      font-size: 1.5em;
+      cursor: pointer;
     }
-
+    .tab.active {
+      color: gold;
+    }
+    .screen {
+      display: none;
+      height: 100vh;
+      width: 100vw;
+      padding-top: 80px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .screen.active {
+      display: block;
+    }
     #clickBtn {
-      margin-top: 20px;
       width: 150px;
       height: 150px;
       border-radius: 50%;
@@ -68,229 +72,149 @@
       cursor: pointer;
       transition: transform 0.1s ease;
     }
-
     #clickBtn:active {
       transform: scale(0.95);
     }
-
-    .stats {
-      margin-top: 10px;
-      font-size: 1.1em;
+    .lang-select {
+      margin-top: 30px;
     }
-
-    .tab-bar {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #111;
-      display: flex;
-      justify-content: space-around;
-      border-top: 1px solid #333;
-      z-index: 3;
-    }
-
-    .tab-bar button {
-      flex: 1;
+    .lang-btn {
+      font-size: 1.5em;
+      margin: 0 10px;
       background: none;
       border: none;
-      color: white;
-      padding: 10px 0;
-      font-size: 1.2em;
       cursor: pointer;
-      transition: background 0.3s;
+      filter: drop-shadow(0 0 3px white);
     }
-
-    .tab-bar button:hover {
-      background: #222;
-    }
-
-    .screen {
-      display: none;
+    .socials {
+      margin-top: 40px;
+      display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 80px 20px 100px;
-    }
-
-    .active {
-      display: flex;
-    }
-
-    .flag-btn {
-      background: #222;
-      color: white;
-      border: 1px solid #555;
-      padding: 5px 10px;
-      border-radius: 8px;
-      margin: 5px;
-      font-size: 1.2em;
-      cursor: pointer;
-    }
-
-    .flag-btn:hover {
-      background: #333;
-    }
-
-    .flags {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
       gap: 10px;
-      margin-top: 10px;
+    }
+    .socials a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.1em;
+    }
+    .socials i {
+      margin-right: 5px;
     }
   </style>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-
-<canvas id="stars"></canvas>
-
-<div id="logo">MBD</div>
-
-<div class="ui">
-  <div id="mainScreen" class="screen active">
-    <button id="clickBtn">НАЖМИ</button>
-    <div class="stats"><span data-i18n="points">Баллы</span>: <span id="pointCount">0</span></div>
-    <div class="stats"><span data-i18n="clicks">Клики</span>: <span id="clickCount">0</span></div>
-    <div class="stats"><span data-i18n="timer">Таймер</span>: <span id="timer">04:00:00</span></div>
+  <div class="top-bar">
+    <div><span data-i18n="points">Баллы</span>: <span id="pointCount">0</span><br><span data-i18n="clicks">Клики</span>: <span id="clickCount">0</span></div>
+    <div class="center-logo">MBD</div>
+    <div id="timer">04:00:00</div>
   </div>
 
-  <div id="shopScreen" class="screen">
-    <h2 data-i18n="shop">Магазин</h2>
-    <p>Пока пусто</p>
+  <div id="game" class="screen active">
+    <button id="clickBtn" data-i18n="click">НАЖМИ</button>
   </div>
 
-  <div id="tasksScreen" class="screen">
-    <h2 data-i18n="tasks">Задания</h2>
-    <p>Пока пусто</p>
+  <div id="shop" class="screen">
+    <h2>🛒 <span data-i18n="shop">Магазин</span></h2>
+    <p>Скоро здесь появятся улучшения!</p>
   </div>
 
-  <div id="socialScreen" class="screen">
-    <h2 data-i18n="community">Сообщество</h2>
-    <a href="https://t.me/yourchannel" target="_blank" style="color:deepskyblue;">Telegram</a><br>
-    <a href="https://discord.gg/yourinvite" target="_blank" style="color:violet;">Discord</a>
+  <div id="tasks" class="screen">
+    <h2>📋 <span data-i18n="tasks">Задания</span></h2>
+    <p>Выполняй задания и зарабатывай баллы!</p>
   </div>
 
-  <div id="settingsScreen" class="screen">
-    <h2 data-i18n="settings">Настройки</h2>
-    <div class="flags">
-      <button class="flag-btn" onclick="setLanguage('ru')">🇷🇺 Русский</button>
-      <button class="flag-btn" onclick="setLanguage('en')">🇬🇧 English</button>
-      <button class="flag-btn" onclick="setLanguage('tm')">🇹🇲 Türkmen</button>
-      <button class="flag-btn" onclick="setLanguage('tr')">🇹🇷 Türkçe</button>
+  <div id="settings" class="screen">
+    <h2>⚙️ <span data-i18n="settings">Настройки</span></h2>
+    <div class="lang-select">
+      <button class="lang-btn" onclick="setLanguage('ru')">🇷🇺</button>
+      <button class="lang-btn" onclick="setLanguage('en')">🇬🇧</button>
+      <button class="lang-btn" onclick="setLanguage('tm')">🇹🇲</button>
+      <button class="lang-btn" onclick="setLanguage('tr')">🇹🇷</button>
+    </div>
+    <div class="socials">
+      <a href="https://t.me/mbd_telegram" target="_blank"><i class="fab fa-telegram"></i> Telegram-канал</a>
+      <a href="https://instagram.com/mbd_coin" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+      <p>Этот бот создал: <a href="https://t.me/Salyh_servers" target="_blank">@Salyh_servers</a></p>
     </div>
   </div>
-</div>
 
-<div class="tab-bar">
-  <button onclick="showScreen('mainScreen')">⭐</button>
-  <button onclick="showScreen('shopScreen')">🛒</button>
-  <button onclick="showScreen('tasksScreen')">📋</button>
-  <button onclick="showScreen('socialScreen')">💬</button>
-  <button onclick="showScreen('settingsScreen')">⚙️</button>
-</div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="showScreen('game')">🪐</div>
+    <div class="tab" onclick="showScreen('shop')">🛒</div>
+    <div class="tab" onclick="showScreen('tasks')">📋</div>
+    <div class="tab" onclick="showScreen('settings')">⚙️</div>
+  </div>
 
-<script>
-  // Локализация
-  const translations = {
-    ru: { points: 'Баллы', clicks: 'Клики', timer: 'Таймер', shop: 'Магазин', tasks: 'Задания', community: 'Сообщество', settings: 'Настройки', click: 'НАЖМИ' },
-    en: { points: 'Points', clicks: 'Clicks', timer: 'Timer', shop: 'Shop', tasks: 'Tasks', community: 'Community', settings: 'Settings', click: 'CLICK' },
-    tm: { points: 'Bally', clicks: 'Çykma', timer: 'Wagt', shop: 'Dükan', tasks: 'Wezipeler', community: 'Topar', settings: 'Sazlamalar', click: 'BASYŇ' },
-    tr: { points: 'Puan', clicks: 'Tıklama', timer: 'Zamanlayıcı', shop: 'Mağaza', tasks: 'Görevler', community: 'Topluluk', settings: 'Ayarlar', click: 'TIKLA' }
-  };
+  <script>
+    const translations = {
+      ru: { points: 'Баллы', clicks: 'Клики', click: 'НАЖМИ', shop: 'Магазин', tasks: 'Задания', settings: 'Настройки' },
+      en: { points: 'Points', clicks: 'Clicks', click: 'CLICK', shop: 'Shop', tasks: 'Tasks', settings: 'Settings' },
+      tm: { points: 'Bally', clicks: 'Çykma', click: 'BASYŇ', shop: 'Dükan', tasks: 'Wezipeler', settings: 'Sazlamalar' },
+      tr: { points: 'Puan', clicks: 'Tıklama', click: 'TIKLA', shop: 'Mağaza', tasks: 'Görevler', settings: 'Ayarlar' }
+    };
 
-  let lang = localStorage.getItem('lang') || 'ru';
-  function setLanguage(l) {
-    lang = l;
-    localStorage.setItem('lang', lang);
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.dataset.i18n;
-      if (translations[lang][key]) el.textContent = translations[lang][key];
-    });
-    document.getElementById('clickBtn').textContent = translations[lang].click;
-  }
-
-  // Состояние
-  let clicks = +localStorage.getItem('clicks') || 0;
-  let points = +localStorage.getItem('points') || 0;
-  let endTime = +localStorage.getItem('endTime') || (Date.now() + 4 * 3600 * 1000);
-
-  const clickBtn = document.getElementById('clickBtn');
-  const clickCount = document.getElementById('clickCount');
-  const pointCount = document.getElementById('pointCount');
-  const timer = document.getElementById('timer');
-
-  clickBtn.addEventListener('click', () => {
-    if (Date.now() < endTime) {
-      clicks++;
-      if (clicks % 70 === 0) points++;
-      localStorage.setItem('clicks', clicks);
-      localStorage.setItem('points', points);
-      updateUI();
+    function setLanguage(lang) {
+      localStorage.setItem('lang', lang);
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
     }
-  });
 
-  function updateUI() {
-    clickCount.textContent = clicks;
-    pointCount.textContent = points;
-  }
+    let lang = localStorage.getItem('lang') || 'ru';
+    setLanguage(lang);
 
-  function updateTimer() {
-    let t = endTime - Date.now();
-    if (t <= 0) {
-      timer.textContent = '00:00:00';
-      return;
+    let clicks = +localStorage.getItem('clicks') || 0;
+    let points = +localStorage.getItem('points') || 0;
+    let endTime = +localStorage.getItem('endTime') || (Date.now() + 4 * 60 * 60 * 1000);
+
+    const clickBtn = document.getElementById('clickBtn');
+    const clickCount = document.getElementById('clickCount');
+    const pointCount = document.getElementById('pointCount');
+    const timer = document.getElementById('timer');
+
+    function updateUI() {
+      clickCount.textContent = clicks;
+      pointCount.textContent = points;
     }
-    let h = String(Math.floor(t / 3600000)).padStart(2, '0');
-    let m = String(Math.floor((t % 3600000) / 60000)).padStart(2, '0');
-    let s = String(Math.floor((t % 60000) / 1000)).padStart(2, '0');
-    timer.textContent = `${h}:${m}:${s}`;
-  }
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
+    function updateTimer() {
+      let timeLeft = endTime - Date.now();
+      if (timeLeft <= 0) {
+        timer.textContent = '00:00:00';
+        return;
+      }
+      let h = String(Math.floor(timeLeft / 3600000)).padStart(2, '0');
+      let m = String(Math.floor((timeLeft % 3600000) / 60000)).padStart(2, '0');
+      let s = String(Math.floor((timeLeft % 60000) / 1000)).padStart(2, '0');
+      timer.textContent = `${h}:${m}:${s}`;
+    }
 
-  // Анимация звёзд
-  const canvas = document.getElementById('stars');
-  const ctx = canvas.getContext('2d');
-  let w = canvas.width = window.innerWidth;
-  let h = canvas.height = window.innerHeight;
-
-  let stars = Array.from({ length: 100 }, () => ({
-    x: Math.random() * w,
-    y: Math.random() * h,
-    r: Math.random() * 2,
-    speed: Math.random() * 0.5 + 0.5
-  }));
-
-  function drawStars() {
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = 'white';
-    stars.forEach(star => {
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-      ctx.fill();
-      star.y += star.speed;
-      if (star.y > h) {
-        star.y = 0;
-        star.x = Math.random() * w;
+    clickBtn.addEventListener('click', () => {
+      if (Date.now() < endTime) {
+        clicks++;
+        if (clicks % 70 === 0) points++;
+        localStorage.setItem('clicks', clicks);
+        localStorage.setItem('points', points);
+        updateUI();
       }
     });
-    requestAnimationFrame(drawStars);
-  }
 
-  window.addEventListener('resize', () => {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  });
+    setInterval(updateTimer, 1000);
+    updateUI();
+    updateTimer();
 
-  // Инициализация
-  setLanguage(lang);
-  updateUI();
-  updateTimer();
-  setInterval(updateTimer, 1000);
-  drawStars();
-</script>
-
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      const index = ['game', 'shop', 'tasks', 'settings'].indexOf(id);
+      document.querySelectorAll('.tab')[index].classList.add('active');
+    }
+  </script>
 </body>
 </html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>MBD Clicker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: black;
+      color: white;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://i.imgur.com/8KHKhxJ.jpeg') no-repeat center center / cover;
+      z-index: -2;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    #header {
+      position: absolute;
+      top: 15px;
+      width: 100%;
+      text-align: center;
+      font-size: 2em;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 15px cyan;
+    }
+
+    #points, #clicks {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      font-size: 1em;
+    }
+
+    #clicks {
+      top: 40px;
+    }
+
+    #timer {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1em;
+    }
+
+    #mainPage, #shopPage, #questsPage, #settingsPage {
+      display: none;
+      padding-top: 100px;
+      text-align: center;
+    }
+
+    #mainPage.active,
+    #shopPage.active,
+    #questsPage.active,
+    #settingsPage.active {
+      display: block;
+    }
+
+    #clickBtn {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: red;
+      color: white;
+      font-size: 1.1em;
+      border: none;
+      box-shadow: 0 0 20px red;
+      cursor: pointer;
+    }
+
+    .tabs {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      background: rgba(0, 0, 0, 0.7);
+      border-top: 1px solid #444;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 1.4em;
+      cursor: pointer;
+      color: white;
+    }
+
+    .lang-select {
+      margin-top: 20px;
+    }
+
+    .lang-btn {
+      margin: 5px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2em;
+      cursor: pointer;
+      background: #333;
+      color: white;
+    }
+
+    .social {
+      margin-top: 20px;
+      font-size: 1.5em;
+    }
+
+    .social a {
+      margin: 0 10px;
+      color: white;
+      text-decoration: none;
+    }
+
+    .author {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div id="header">MBD</div>
+<div id="points"><span data-i18n="points">Баллы</span>: <span id="pointCount">0</span></div>
+<div id="clicks"><span data-i18n="clicks">Клики</span>: <span id="clickCount">0</span></div>
+<div id="timer">04:00:00</div>
+
+<div id="mainPage" class="active">
+  <button id="clickBtn" data-i18n="click">НАЖМИ</button>
+</div>
+
+<div id="shopPage">
+  <h2>🛒 Магазин</h2>
+  <p>Скоро...</p>
+</div>
+
+<div id="questsPage">
+  <h2>📋 Задания</h2>
+  <p>Скоро...</p>
+</div>
+
+<div id="settingsPage">
+  <h2 data-i18n="settings">⚙️ Настройки</h2>
+  <div class="lang-select">
+    <button class="lang-btn" onclick="setLanguage('ru')">🇷🇺</button>
+    <button class="lang-btn" onclick="setLanguage('en')">🇬🇧</button>
+    <button class="lang-btn" onclick="setLanguage('tm')">🇹🇲</button>
+    <button class="lang-btn" onclick="setLanguage('tr')">🇹🇷</button>
+  </div>
+  <div class="social">
+    <a href="https://t.me/mbd_telegram" target="_blank">📱 Telegram</a>
+    <a href="https://instagram.com/mbd_coin" target="_blank">📸 Instagram</a>
+  </div>
+  <div class="author">Этот бот создал: @Salyh_servers</div>
+</div>
+
+<div class="tabs">
+  <div class="tab" onclick="showPage('mainPage')">🎮</div>
+  <div class="tab" onclick="showPage('shopPage')">🛒</div>
+  <div class="tab" onclick="showPage('questsPage')">📋</div>
+  <div class="tab" onclick="showPage('settingsPage')">⚙️</div>
+</div>
+
+<script>
+  const translations = {
+    ru: { points: 'Баллы', clicks: 'Клики', click: 'НАЖМИ', settings: '⚙️ Настройки' },
+    en: { points: 'Points', clicks: 'Clicks', click: 'CLICK', settings: '⚙️ Settings' },
+    tm: { points: 'Bally', clicks: 'Çykma', click: 'BASYŇ', settings: '⚙️ Sazlamalar' },
+    tr: { points: 'Puan', clicks: 'Tıklama', click: 'TIKLA', settings: '⚙️ Ayarlar' }
+  };
+
+  function setLanguage(lang) {
+    localStorage.setItem('lang', lang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      el.textContent = translations[lang][key] || el.textContent;
+    });
+  }
+
+  const savedLang = localStorage.getItem('lang') || 'ru';
+  setLanguage(savedLang);
+
+  let clicks = +localStorage.getItem('clicks') || 0;
+  let points = +localStorage.getItem('points') || 0;
+  let endTime = +localStorage.getItem('endTime') || (Date.now() + 4 * 60 * 60 * 1000);
+
+  const clickBtn = document.getElementById('clickBtn');
+  const clickCount = document.getElementById('clickCount');
+  const pointCount = document.getElementById('pointCount');
+  const timer = document.getElementById('timer');
+
+  clickBtn.addEventListener('click', () => {
+    if (Date.now() < endTime) {
+      clicks++;
+      if (clicks % 70 === 0) points++;
+      localStorage.setItem('clicks', clicks);
+      localStorage.setItem('points', points);
+      updateUI();
+    }
+  });
+
+  function updateUI() {
+    clickCount.textContent = clicks;
+    pointCount.textContent = points;
+  }
+
+  function updateTimer() {
+    const t = endTime - Date.now();
+    if (t <= 0) {
+      timer.textContent = '00:00:00';
+    } else {
+      const h = String(Math.floor(t / 3600000)).padStart(2, '0');
+      const m = String(Math.floor((t % 3600000) / 60000)).padStart(2, '0');
+      const s = String(Math.floor((t % 60000) / 1000)).padStart(2, '0');
+      timer.textContent = `${h}:${m}:${s}`;
+    }
+  }
+
+  function showPage(id) {
+    document.querySelectorAll('#mainPage, #shopPage, #questsPage, #settingsPage')
+      .forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  setInterval(updateTimer, 1000);
+  updateUI();
+  updateTimer();
+
+  // Анимация звёзд
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const stars = Array.from({ length: 100 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2,
+    speed: Math.random() * 0.5 + 0.2
+  }));
+
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'white';
+    for (let s of stars) {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+      s.y += s.speed;
+      if (s.y > canvas.height) {
+        s.y = 0;
+        s.x = Math.random() * canvas.width;
+      }
+    }
+    requestAnimationFrame(drawStars);
+  }
+  drawStars();
+</script>
+</body>
+</html>
